@@ -14,4 +14,5 @@ urlpatterns = [
         views.UsuarioDeleteView.as_view(),
         name="usuario_delete",
     ),
+    path('list',views.UsuarioVer.as_view(),name='list')
 ]

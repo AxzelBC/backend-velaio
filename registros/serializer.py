@@ -57,6 +57,8 @@ class TiempoSerializer(serializers.ModelSerializer):
             "tipoPeticion", instance.tipoPeticion
         )
         instance.enlace = validated_data.get("enlace", instance.enlace)
-        instance.hora = validated_data.get("hora", instance.hora)
+        instance.ciudad = validated_data.get("ciudad", instance.ciudad)
+        instance.humedad = validated_data.get("humedad", instance.humedad)
+        instance.temp = validated_data.get("temp", instance.temp)
 
         return super().update(instance, validated_data)

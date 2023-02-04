@@ -2,9 +2,9 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.http import Http404
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 
-from users.models import Usuario
-from users.serializer import UsuarioSerializer
+from users.serializer import UserSerializer
 from users.tokens import create_jwt_pair_for_user
 
 from rest_framework.views import APIView
@@ -19,8 +19,8 @@ from rest_framework import status, generics, permissions
 # Crear usuario
 @method_decorator(csrf_exempt, name="dispatch")
 class UsuarioCreateView(generics.CreateAPIView):
-    serializer_class = UsuarioSerializer
-    model = Usuario
+    serializer_class = UserSerializer
+    model = User
     permission_classes = [permissions.AllowAny]
 
     def post(self, request: Request):
@@ -30,13 +30,16 @@ class UsuarioCreateView(generics.CreateAPIView):
             serializer.save()
             response = {"mensaje": "Usuario creado", "data": serializer.data}
             return Response(response, status=status.HTTP_201_CREATED)
+        else:
+            response = {"mensaje": "Error al crear usuario", "data": serializer.errors}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Modificar usuario
 @method_decorator(csrf_exempt, name="dispatch")
 class UsuarioUpdateView(generics.UpdateAPIView):
-    serializer_class = UsuarioSerializer
-    model = Usuario
+    serializer_class = UserSerializer
+    model = User
     permission_classes = [permissions.AllowAny]
 
     def get_object(self, id):
@@ -61,8 +64,8 @@ class UsuarioUpdateView(generics.UpdateAPIView):
 # Borrar usuario
 @method_decorator(csrf_exempt, name="dispatch")
 class UsuarioDeleteView(generics.DestroyAPIView):
-    serializer_class = UsuarioSerializer
-    model = Usuario
+    serializer_class = UserSerializer
+    model = User
     permission_classes = [permissions.AllowAny]
 
     def get_object(self, id):
@@ -85,20 +88,20 @@ class UsuarioDeleteView(generics.DestroyAPIView):
 # Inicio de sesión
 @method_decorator(csrf_exempt, name="dispatch")
 class UsuarioLoginView(APIView):
-    serializer_class = UsuarioSerializer
-    model = Usuario
+    serializer_class = UserSerializer
+    model = User
     permission_classes = [permissions.AllowAny]
 
     def post(self, request: Request):
         email = request.data.get("email")
         password = request.data.get("password")
-        print(repr(email))
-        print(repr(password))
-        usuario = authenticate(email=email, password=password)
+        print(email)
+        print(password)
+        usuario = authenticate(username=email, password=password)
         print(repr(usuario))
         if usuario is not None:
             tokens = create_jwt_pair_for_user(usuario)
-            serializer = self.model(usuario, many=False)
+            serializer = self.serializer_class(usuario, many=False)
             response = {
                 "login": True,
                 "message": "Logueado correctamente",
@@ -109,3 +112,11 @@ class UsuarioLoginView(APIView):
         else:
             response = {"login": False, "mensaje": "Correo o contraseña invalidos"}
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        
+
+@method_decorator(csrf_exempt, name="dispatch")
+class UsuarioVer(generics.ListAPIView):
+    serializer_class = UserSerializer
+    model = User
+    permission_classes = [permissions.AllowAny]
+    queryset = model.objects.all()

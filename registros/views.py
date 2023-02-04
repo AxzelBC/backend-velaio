@@ -40,6 +40,9 @@ class NoticiasCreateView(generics.CreateAPIView):
             serializer.save()
             response = {"mensaje": "Noticia creado", "data": serializer.data}
             return Response(response, status=status.HTTP_201_CREATED)
+        else:
+            response = {"mensaje": "Error al crear noticia", "data": serializer.errors}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Listar todas las noticias
@@ -75,16 +78,16 @@ class NoticiasUpdateView(generics.UpdateAPIView):
     model = Noticias
     permission_classes = [permissions.AllowAny]
 
-    def get_object(self):
+    def get_object(self,id):
         try:
             return self.model.objects.get(pk=id)
         except self.model.DoesNotExist:
             raise Http404("La noticia no existe")
 
     def put(self, request: Request, *args, **kwargs):
-        pk = self.kwargs.get("pk")
+        id = self.kwargs.get("id")
         data = request.data
-        noticia = self.get_object(pk)
+        noticia = self.get_object(id)
         serializer = self.serializer_class(noticia, data=data)
         if serializer.is_valid():
             serializer.save()
@@ -104,15 +107,15 @@ class NoticiasDeleteView(generics.DestroyAPIView):
     model = Noticias
     permission_classes = [permissions.AllowAny]
 
-    def get_object(self):
+    def get_object(self,id):
         try:
             return self.model.objects.get(pk=id)
         except self.model.DoesNotExist:
             raise Http404("La noticia no existe")
 
     def delete(self, request: Request, *args, **kwargs):
-        pk = self.kwargs.get("pk")
-        noticia = self.get_object(pk)
+        id = self.kwargs.get("id")
+        noticia = self.get_object(id)
         if noticia.delete():
             response = {"mensaje": "Noticia eliminado"}
             return Response(response, status=status.HTTP_202_ACCEPTED)
@@ -131,7 +134,7 @@ class NoticiasDeleteView(generics.DestroyAPIView):
 {
     "tipoPeticion": "tiempo",
     "enlace": "https://www.elespectador.com/opinion/columnistas/luis-fernando-montoya/columna-del-profe-montoya-campeones-de-la-libertadores/",
-    "tiempo": "?"
+    "hora": "18:00:00"
 }
 """
 
@@ -149,6 +152,9 @@ class TiempoCreateView(generics.CreateAPIView):
             serializer.save()
             response = {"mensaje": "Tiempo creado", "data": serializer.data}
             return Response(response, status=status.HTTP_201_CREATED)
+        else:
+            response = {"mensaje": "Error al crear un time", "data": serializer.errors}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Listar todas los registros de tiempo
@@ -170,7 +176,7 @@ class TiempoListView(generics.ListAPIView):
     "id": 1,
     "tipoPeticion": "tiempo",
     "enlace": "http://api.openweathermap.org/data/2.5/forecast?id=524901&appid={API key}",
-    "tiempo": "?"
+    "hora": "20:00:00"
 }
 """
 
@@ -181,16 +187,16 @@ class TiempoUpdateView(generics.UpdateAPIView):
     model = Tiempo
     permission_classes = [permissions.AllowAny]
 
-    def get_object(self):
+    def get_object(self,id):
         try:
             return self.model.objects.get(pk=id)
         except self.model.DoesNotExist:
             raise Http404("El tiempo no existe")
 
     def put(self, request: Request, *args, **kwargs):
-        pk = self.kwargs.get("pk")
+        id = self.kwargs.get("id")
         data = request.data
-        tiempo = self.get_object(pk)
+        tiempo = self.get_object(id)
         serializer = self.serializer_class(tiempo, data=data)
         if serializer.is_valid():
             serializer.save()
@@ -210,15 +216,15 @@ class TiempoDeleteView(generics.DestroyAPIView):
     model = Tiempo
     permission_classes = [permissions.AllowAny]
 
-    def get_object(self):
+    def get_object(self,id):
         try:
             return self.model.objects.get(pk=id)
         except self.model.DoesNotExist:
             raise Http404("El tiempo no existe")
 
     def delete(self, request: Request, *args, **kwargs):
-        pk = self.kwargs.get("pk")
-        tiempo = self.get_object(pk)
+        id = self.kwargs.get("id")
+        tiempo = self.get_object(id)
         if tiempo.delete():
             response = {"mensaje": "Tiempo eliminado"}
             return Response(response, status=status.HTTP_202_ACCEPTED)

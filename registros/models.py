@@ -4,8 +4,8 @@ from django.db import models
 
 
 class TipoPeticion(models.TextChoices):
-    NEW = "new"
-    TIME = "time"
+    NEW = "noticia"
+    TIME = "tiempo"
 
 
 class Registro(models.Model):
@@ -38,7 +38,9 @@ class Noticias(Registro):
 
 
 class Tiempo(Registro):
-    hora = models.TimeField(null=False)
+    ciudad = models.CharField(null=False, max_length=50)
+    humedad = models.IntegerField(null=False)
+    temp = models.IntegerField(null=False)
 
     def __int__(self):
         return self.id
