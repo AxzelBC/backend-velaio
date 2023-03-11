@@ -93,11 +93,11 @@ class UsuarioLoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request: Request):
-        email = request.data.get("email")
+        username = request.data.get("username")
         password = request.data.get("password")
-        print(email)
+        print(username)
         print(password)
-        usuario = authenticate(username=email, password=password)
+        usuario = authenticate(username=username, password=password)
         print(repr(usuario))
         if usuario is not None:
             tokens = create_jwt_pair_for_user(usuario)
